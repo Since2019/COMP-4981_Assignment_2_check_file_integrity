@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <getopt.h>
-
+#include <inttypes.h>
 #include "input_handler.h"
 
 #define EVEN 0
