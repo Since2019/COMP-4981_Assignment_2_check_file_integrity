@@ -18,11 +18,12 @@ int parse_args(int argc, const char* argv[])
             dup2(fd, STDIN_FILENO);
             close(fd);
         }
-        arg_count++;
+        
         if(strcmp(argv[arg_count], ">") == 0)
         {
             fprintf(stderr, "if file was defined, please use a txt file\n");
         }
+        arg_count++;
     }
 
     return 0;
@@ -84,11 +85,12 @@ void parse_file_args(int argc, const char* argv[], FILE* ifile)
             dup2(fd, STDIN_FILENO);
             close(fd);
         }
-        arg_count++;
+        
 
         if(strcmp(argv[arg_count], ">") == 0)
         {
             fprintf(stderr, "if file was defined, please use a txt file\n");
         }
+        arg_count++;
     }
 }
