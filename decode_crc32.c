@@ -18,7 +18,6 @@ void decimalToBinary(int decimal_num, char *bin_8_bits)
         result = decimal_num >> c;
 
         if (result & 1)
-            // printf("1");
             bin_8_bits[7 - c] = '1';
         else
             bin_8_bits[7 - c] = '0';
@@ -40,7 +39,6 @@ void crcToBinary(int decimal_num, char *bin_32_bits)
         result = decimal_num >> c;
 
         if (result & 1)
-            // printf("1");
             bin_32_bits[31 - c] = '1';
         else
             bin_32_bits[31 - c] = '0';
@@ -130,7 +128,7 @@ int main(int argc, char const *argv[])
     // file pointeres for command line checker
     FILE *in_file = stdin;
     FILE *out_file = stdout;
-    
+
     parse_file_args(argc, argv, in_file);
 
     uint32_t crc = 0;
@@ -144,8 +142,8 @@ int main(int argc, char const *argv[])
     while (1)
     {
         c = getc(in_file);
-
-        if (c == EOF)
+        // printf("%c", c);
+        if (c == EOF || c == '\n')
             break;
 
         if (is_byte == 8)
@@ -160,26 +158,40 @@ int main(int argc, char const *argv[])
 
     crc = calc_crc(byt, crc);
 
+    // CRC gets a remainder of 0
     if (crc == 0)
     {
-        fprintf(stderr, "CRC checking passed: ");
-        fseek(in_file, 0, SEEK_SET);
-        clearerr(in_file);
+        fprintf(stderr, "CRC checking passed\n");
+
+        if (isatty(fileno(in_file)) == 1)
+        {
+            rewind(stdin);
+            printf("please reinput encoded data\n");
+        }
+        else
+        {
+            fseek(in_file, 0, SEEK_SET);
+            clearerr(in_file);
+        }
+        
         num_bytes -= 4;
-    } else
+
+        
+    }
+    else
     {
         fprintf(stderr, "CRC checking failed: ");
+        return 1;
     }
-    
 
     int temp_num_bytes = 0;
     is_byte = 0;
     while (1)
     {
         c = getc(in_file);
-        if (c == EOF)
+        if (c == EOF || c == '\n')
         {
-            fprintf(stderr, " after checking %d bytes\n", is_byte);
+            fprintf(stderr, "after checking %d bytes\n", is_byte);
             break;
         }
 
@@ -192,7 +204,6 @@ int main(int argc, char const *argv[])
         append_to_int8(&byt, c);
         is_byte++;
     }
-
 
     return 0;
 }

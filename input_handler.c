@@ -16,7 +16,7 @@ int parse_args(int argc, const char* argv[])
             
             int fd = open(argv[arg_count], O_RDONLY);
             dup2(fd, STDIN_FILENO);
-            close(fd);
+            // close(fd);
         }
         
         if(strcmp(argv[arg_count], ">") == 0)
