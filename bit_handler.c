@@ -6,7 +6,7 @@
 int count_one_bits(int8_t b)
 {
     // array of bit masks
-    const uint mask[] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
+    const uint8_t mask[] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
 
     int pass = 0;    // used to check how many bits has been passed through
     int p_check = 0; // used for parity checking
