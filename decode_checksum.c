@@ -85,7 +85,7 @@ int main(int argc, char const *argv[])
         // if read characters is 8, process code
 
         c = getchar();
-        if (c == EOF)
+        if (c == EOF || c == '\n')
         {
             break;
         }
