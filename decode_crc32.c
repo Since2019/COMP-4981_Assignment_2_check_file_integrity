@@ -129,6 +129,8 @@ int main(int argc, char const *argv[])
     FILE *in_file = stdin;
     FILE *out_file = stdout;
 
+    FILE *tmp_file = NULL;
+
     parse_file_args(argc, argv, in_file);
 
     uint32_t crc = 0;
@@ -138,6 +140,12 @@ int main(int argc, char const *argv[])
     int is_byte = 0;
 
     int num_bytes = 0;
+
+//  if tmp_file exists, writes to it. 
+    if(in_file==stdin){
+         tmp_file = fopen("decode_crc32.tmp","w");
+    }
+
 
     while (1)
     {
@@ -153,8 +161,10 @@ int main(int argc, char const *argv[])
             num_bytes++;
         }
         append_to_int8(&byt, c);
+        fprintf(tmp_file,"%c",c);
         is_byte++;
     }
+    fclose(tmp_file);
 
     crc = calc_crc(byt, crc);
 
@@ -165,8 +175,10 @@ int main(int argc, char const *argv[])
 
         if (isatty(fileno(in_file)) == 1)
         {
-            rewind(stdin);
-            printf("please reinput encoded data\n");
+            // rewind(stdin);
+            // printf("please reinput encoded data\n");
+
+
         }
         else
         {
@@ -186,24 +198,76 @@ int main(int argc, char const *argv[])
 
     int temp_num_bytes = 0;
     is_byte = 0;
-    while (1)
-    {
-        c = getc(in_file);
-        if (c == EOF || c == '\n')
-        {
-            fprintf(stderr, "after checking %d bytes\n", is_byte);
-            break;
-        }
 
-        if (is_byte == 8 && temp_num_bytes <= num_bytes)
-        {
-            is_byte = 0;
-            fprintf(out_file, "%c", byt);
-            temp_num_bytes++;
+
+//  keyboard input:
+    FILE *read_tmp_file = fopen("decode_crc32.tmp","r");
+
+    if(read_tmp_file!=NULL){
+
+        // fprintf(stderr, "%s", "read_tmp_file\n\n");
+        while(1){
+            c = getc(read_tmp_file);
+            // fprintf(stderr, "%c", c);
+
+            if (c == EOF)
+            {
+                // fprintf(stderr, "\nafter checking %d bytes\n", is_byte);
+                break;
+            }
+
+            if (is_byte == 8 && temp_num_bytes <= num_bytes)
+            {
+                is_byte = 0;
+                // fprintf(stderr, "%c", byt);
+                fprintf(out_file, "%c", byt);
+
+
+                temp_num_bytes++;
+            }
+            append_to_int8(&byt, c);
+            is_byte++;
         }
-        append_to_int8(&byt, c);
-        is_byte++;
     }
+    fclose(read_tmp_file);
+
+
+
+
+
+
+    // // fprintf(stderr, "%s", "Printing out info");
+    // c = 0;
+    // byt = 0x00;
+    // is_byte = 0;
+    // temp_num_bytes = 0;
+    // num_bytes = 0;
+    // while (1)
+    // {
+    //     c = getc(in_file);
+    //     if (c == EOF || c == '\n')
+    //     {
+    //         // fprintf(stderr, "after checking %d bytes\n", is_byte);
+    //         break;
+    //     }
+
+    //     if (is_byte == 8 && temp_num_bytes <= num_bytes)
+    //     {
+    //         is_byte = 0;
+    //         fprintf(out_file, "%c", byt);
+            
+
+
+    //         temp_num_bytes++;
+    //     }
+    //     append_to_int8(&byt, c);
+    //     is_byte++;
+    // }
+    fclose(in_file);
+    fclose(out_file);
+    unlink("decode_crc32.tmp");
+
+
 
     return 0;
 }
